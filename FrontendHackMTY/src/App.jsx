@@ -4,10 +4,10 @@ import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
+  const [input, setInput] = useState({first: "", last: ""})
   const [text, setText] = useState("")
   const [pos, setPos] = useState({x: 0, y: 0})
   let i = useRef(0)
-
   return (
     <>
       {/* <div>
@@ -40,10 +40,14 @@ function App() {
       }>Click Me!</button>
       <form>
         <label htmlFor='first'>First name:</label>
-        <input type="text" placeholder='Peter' id="first"/>
+        <input type="text" placeholder='Peter' id="first" value={input.first} onChange={(event) => {setInput(prevInput => ({first: event.target.value, last: prevInput.last}))}}/>
         <label htmlFor='last'>Last name:</label>
-        <input type="text" placeholder='Parker' id="last"/>
-        <button type="submit">Submit</button>
+        <input type="text" placeholder='Parker' id="last" value={input.last} onChange={(event) => {setInput(prevInput => ({first: prevInput.first, last: event.target.value}))}}/>
+        <button type="submit" onClick={(event) => {
+          // Get and show submitted data
+          event.preventDefault()
+          console.log(input.first, input.last)
+        }}>Submit</button>
       </form>
     </>
   )
