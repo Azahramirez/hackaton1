@@ -1,13 +1,42 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import axios from 'axios';
 
 function App() {
   const [input, setInput] = useState({first: "", last: ""})
+  const [server, setServer] = useState("")
   const [text, setText] = useState("")
   const [pos, setPos] = useState({x: 0, y: 0})
   let i = useRef(0)
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/get_data").then(res => res.json()).then(data => setServer(data))
+  }, [])
+  console.log(server)
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      // Save data to Local Storage
+      localStorage.setItem('user_data', input.first,input.last);
+
+      // Send data to Flask backend using Axios
+      const response = await axios.post('http://127.0.0.1:5000/insert_data', {
+        data: input.first,
+        last: input.last,
+      });
+
+      console.log(response.data);
+      console.log(response.last);
+      // You can perform additional actions based on the Axios response
+    } catch (error) {
+      console.error(error);
+    }
+
+    console.log(input.first, input.last);
+  };
   return (
     <>
       {/* <div>
@@ -43,11 +72,7 @@ function App() {
         <input type="text" placeholder='Peter' id="first" value={input.first} onChange={(event) => {setInput(prevInput => ({first: event.target.value, last: prevInput.last}))}}/>
         <label htmlFor='last'>Last name:</label>
         <input type="text" placeholder='Parker' id="last" value={input.last} onChange={(event) => {setInput(prevInput => ({first: prevInput.first, last: event.target.value}))}}/>
-        <button type="submit" onClick={(event) => {
-          // Get and show submitted data
-          event.preventDefault()
-          console.log(input.first, input.last)
-        }}>Submit</button>
+        <button type="submit" onClick={handleFormSubmit}>Submit</button>
       </form>
     </>
   )
